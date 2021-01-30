@@ -1,0 +1,18 @@
+[v-cloak] {
+	display: none;
+}
+
+body {
+	background: url(../img/cool-background.png);
+	background-size: 100% 100%;
+	background-attachment: fixed;
+	margin-top: 20px;
+}
+
+#app {
+	width: 40%;
+	margin: auto;
+	background: white;
+	padding-top: 1px;
+	border-radius: 25px;
+}

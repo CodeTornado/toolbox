@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>随机密码生成器</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../tool-box/css/random_pw.css">
+    <link rel="stylesheet" href="../tool-box/external/element-ui/css/index.css">
+</head>
+<body>
+<div id="app" v-cloak>
+    <h3 style="text-align:center">随机密码生成器</h3>
+    <div style="width: 70%;margin: auto;">
+        <el-form :model="form" :inline="true" ref="form" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="包含英文">
+                <el-checkbox-group v-model="form.english">
+                    <el-checkbox label="大写" name="english"></el-checkbox>
+                    <el-checkbox label="小写" name="english"></el-checkbox>
+                </el-checkbox-group>
+            </el-form-item>
+            <el-form-item label="包含数字">
+                <el-switch v-model="form.number"></el-switch>
+            </el-form-item>
+            <el-form-item label="特殊符号">
+                <el-switch v-model="form.special"></el-switch>
+            </el-form-item>
+            <el-form-item label="不重复">
+                <el-switch v-model="form.no_repeat"></el-switch>
+            </el-form-item>
+            <el-form-item label="追加结果">
+                <el-switch v-model="form.append_pw"></el-switch>
+            </el-form-item>
+            <el-form-item label="希望字符">
+                <el-input v-model.trim="form.hope" :autosize="{ minRows: 2, maxRows: 4}"
+                          placeholder="请输入希望生成的字符"></el-input>
+            </el-form-item>
+            <el-form-item label="必须字符">
+                <el-input v-model.trim="form.must" placeholder="请输入必须包含的字符"></el-input>
+            </el-form-item>
+            <el-form-item label="排除字符">
+                <el-input v-model.trim="form.avoid" placeholder="请输入不能生成的字符"></el-input>
+            </el-form-item>
+            <el-form-item label="生成长度">
+                <el-select v-model="form.password_length" placeholder="活动区域">
+                    <el-option :label="item +' 位'" :value="item" v-for="item in 60" :key="item"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="生成个数">
+                <el-select v-model="form.count_num" placeholder="活动区域">
+                    <el-option :label="item +'  个'" :value="item" v-for="item in 100" :key="item"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+    </div>
+    <el-divider></el-divider>
+
+    <div style="margin: 20px 0;"></div>
+    <div style="width: 80%;margin: auto;">
+        <el-row>
+            <el-input ref="input_passwordtext_ref" id="input_passwordtext" type="textarea"
+                      :autosize="{ minRows: 2, maxRows: 2}"
+                      placeholder="生成密码输出位置" resize="none" v-model.trim="passwordtext">
+            </el-input>
+        </el-row>
+    </div>
+    <div style="margin: 20px 0;"></div>
+    <el-row style="text-align:center;padding-bottom: 10px;">
+        <el-button type="danger" @click="form=default_form_data;$message.success('成功恢复默认设置');" round>恢复默认</el-button>
+        <el-button type="info" @click="passwordtext = ''; $message.success('成功清空');" round>清空密码</el-button>
+        <el-button type="primary" @click="copy" round>复制文本</el-button>
+        <el-button type="success" @click="generate_pw" round>生成密码</el-button>
+    </el-row>
+
+</div>
+</body>
+<script src="../tool-box/external/element-ui/js/vue.js"></script>
+<script src="../tool-box/external/element-ui/js/index.js"></script>
+<script src="../tool-box/js/random_pw.js"></script>
+</html>
