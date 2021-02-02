@@ -1,0 +1,14 @@
+[v-cloak] {
+	display: none;
+}
+
+body {
+	background: url(../img/cool-background.png);
+	background-size: 100% 100%;
+	background-attachment: fixed;
+	margin-top: 20px;
+}
+
+#app {
+	
+}

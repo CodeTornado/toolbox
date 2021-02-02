@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>word example sentence</title>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="../tool-box/css/word_translation.css">
+		<link rel="stylesheet" href="../tool-box/external/element-ui/css/index.css">
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<h3 style="text-align:center">word example sentence</h3>
+			<el-form :model="submitData" ref="FormRef" label-width="100px" class="demo-ruleForm">
+				<el-form-item label="word" prop="word" :rules="[
+			      { required: true, message: 'Words Can\'t be empty'}
+			    ]">
+					<el-input type="word" v-model="submitData.word" autocomplete="off"></el-input>
+				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" @click="submitForm('FormRef')">submit</el-button>
+					<el-button @click="resetForm('FormRef')">reset</el-button>
+				</el-form-item>
+			</el-form>
+
+			<template>
+				<el-table :data="tableData" stripe style="width: 100%">
+					<el-table-column label="example_sentence">
+						<template slot-scope="scope">
+						{{scope.row.example_sentence}}
+							<span :title="scope.row.translate" style="color: #0000FF;"><b>[translate]</b></span>
+						</template>
+					</el-table-column>
+					<el-table-column label="voice">
+						<template slot-scope="scope">
+							<audio :src="scope.row.voice" controls="controls"></audio>
+						</template>
+					</el-table-column>
+				</el-table>
+			</template>
+		</div>
+	</body>
+	<script src="../tool-box/external/element-ui/js/vue.js"></script>
+	<script src="../tool-box/external/axios/axios.min.js"></script>
+	<script src="../tool-box/external/element-ui/js/index.js"></script>
+	<script src="../tool-box/js/word_translation.js"></script>
+</html>
