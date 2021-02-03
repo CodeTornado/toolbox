@@ -1,6 +1,5 @@
 package com.example.demo;
 
-import com.sun.istack.internal.NotNull;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -74,7 +73,6 @@ public class DemoApplication {
             map.put("example_sentence", exampleSentenceStr);
             list.add(map);
         }
-
         return list;
     }
 }
