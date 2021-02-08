@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootApplication
+@RequestMapping("toolbox")
 @Controller
 public class DemoApplication {
 
@@ -26,13 +27,8 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    @RequestMapping("index")
-    public String index() {
-        return "random_pw";
-    }
-
-    @RequestMapping("/")
-    public String random_pw() {
+    @RequestMapping("random_pw")
+    public String randomPwPage() {
         return "random_pw";
     }
 
@@ -44,9 +40,7 @@ public class DemoApplication {
     @RequestMapping("wordTranslationData")
     @ResponseBody
     public List wordTranslationData(@RequestParam("word") String word) {
-        if (word == null || "".equals(word)) {
-            return null;
-        }
+        word = word.toLowerCase();
         RestTemplate restTemplate = new RestTemplate();
         String fooResourceUrl = "http://dict.youdao.com/example/mdia/" + word + "/#keyfrom=dict.main.moremedia";
         ResponseEntity<String> response = restTemplate.getForEntity(fooResourceUrl, String.class);
@@ -75,4 +69,6 @@ public class DemoApplication {
         }
         return list;
     }
+
+
 }

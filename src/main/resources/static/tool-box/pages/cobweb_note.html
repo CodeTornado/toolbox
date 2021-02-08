@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>蛛网笔记</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../tool-box/external/element-ui/css/index.css">
+    <link rel="stylesheet" href="../tool-box/css/cobweb_note.css">
+</head>
+<body>
+<div id="app" v-cloak>
+    <el-row :gutter="20">
+        <el-col :span="5">
+            <div class="grid-content bg-purple">
+                <el-page-header @back="goBack" content="笔记首页">
+                </el-page-header>
+            </div>
+        </el-col>
+        <el-col :span="13">
+            <div class="grid-content bg-purple">
+                <el-autocomplete style="width: 100%;" :fetch-suggestions="querySearchAsync" placeholder="请输入搜索内容"
+                                 v-model="inputText"
+                                 class="input-with-select" @select="handleSelect">
+                    <el-select v-model="select" slot="prepend" placeholder="请选择类型">
+                        <el-option label="标签" value="1"></el-option>
+                        <el-option label="标题" value="2"></el-option>
+                        <el-option label="内容" value="3"></el-option>
+                    </el-select>
+                </el-autocomplete>
+            </div>
+        </el-col>
+        <el-col :span="2">
+            <el-row>
+                <el-button type="warning" icon="el-icon-link" @click="addNewLink" circle></el-button>
+            </el-row>
+        </el-col>
+    </el-row>
+
+    <el-divider></el-divider>
+    <div>
+        标签:
+        <el-tag
+                :key="tag"
+                v-for="tag in main_data.labelStrList"
+                closable
+                :disable-transitions="false"
+                @close="deleteLabelAssociation(tag)">
+            {{tag}}
+        </el-tag>
+        <el-input
+                class="input-new-tag"
+                v-if="inputNewTagVisible"
+                v-model="inputNewTag"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="inputNewTagConfirm"
+                @blur="inputNewTagConfirm">
+        </el-input>
+        <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+    </div>
+
+    <el-divider></el-divider>
+
+    <el-collapse id="text_main_div" th:text_main_id="${id}" v-model="activeName">
+        <el-collapse-item :title="main_data.text.title" name="1">
+
+            <template slot="title">
+                <div style="width:80%;">
+                    {{main_data.text.title}}
+                </div>
+                <div style="width:20%; text-align:right;">
+                    <el-button size="mini" type="primary" icon="el-icon-edit" @click.stop="showUpdateNoteWindow"
+                               circle></el-button>
+                    <el-popover
+                            placement="top"
+                            width="160"
+                            v-model="deleteNoteVisiblePrompt">
+                        <p>笔记确定删除吗？</p>
+                        <div style="text-align: right; margin: 0">
+                            <el-button size="mini" type="text" @click="deleteNoteVisiblePrompt = false">取消</el-button>
+                            <el-button type="primary" size="mini" @click="deleteMainNote">确定</el-button>
+                        </div>
+                        <el-button @click.stop="1 != 1" slot="reference" size="mini" type="danger" icon="el-icon-delete"
+                                   circle></el-button>
+                    </el-popover>
+
+                </div>
+            </template>
+
+            <div v-html="main_data.text.content_html"></div>
+        </el-collapse-item>
+    </el-collapse>
+
+    <el-divider></el-divider>
+    <h2>相关笔记</h2>
+    <div style="text-align:right;">
+        <el-button type="success" @click="addNewNoteWindow" plain>新增笔记并关联</el-button>
+    </div>
+    <el-collapse>
+        <el-collapse-item v-for="noteDataObj in main_data.relationNoteDatas" :key="noteDataObj.id"
+                          :name="noteDataObj.id">
+            <template slot="title">
+                <div style="width:85%;">
+                    {{noteDataObj.title}}
+                </div>
+                <div style="width:15%; text-align:right;">
+
+                    <el-link :href="'/cobweb_note?id='+noteDataObj.id" v-on:click.stop="1==1">查看<i
+                            class="el-icon-view el-icon--right"></i>
+                    </el-link>
+                    <el-button size="mini" @click.stop="disengage(noteDataObj.id)" type="danger"
+                               icon="el-icon-delete"
+                               circle></el-button>
+                </div>
+            </template>
+            <div v-html="noteDataObj.content_html"></div>
+        </el-collapse-item>
+    </el-collapse>
+
+
+    <el-divider></el-divider>
+
+    <h2>评论</h2>
+    <template>
+        <div style="text-align:right;">
+            <el-button type="success" @click="commentFormVisible = true" plain>添加新评论</el-button>
+        </div>
+        <el-table
+                :data="main_data.commentDatas"
+                border
+                style="width: 100%">
+
+            <el-table-column
+                    prop="content"
+                    label="评论内容">
+            </el-table-column>
+            <el-table-column fixed="right"
+                             prop="createTime"
+                             label="评论日期" width="120">
+            </el-table-column>
+            <el-table-column
+                    fixed="right"
+                    label="操作"
+                    width="100">
+                <template slot-scope="scope">
+                    <el-button @click="handleClick(scope.row)" type="text" size="small">修改</el-button>
+                    <el-button @click="submmitComment(scope.row.id)" type="text" size="small">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+    </template>
+
+
+    <el-backtop></el-backtop>
+
+
+    <!--隐藏弹出框-->
+
+    <el-dialog title="新增笔记并关联" :visible.sync="addNewNoteVisible">
+        <el-form :model="addNewNoteForm">
+            <el-form-item label="标题" :label-width="formLabelWidth">
+                <el-input v-model="addNewNoteForm.title" autocomplete="off" placeholder="请输入标题"></el-input>
+            </el-form-item>
+            <el-form-item label="内容" :label-width="formLabelWidth">
+                <el-input type="textarea" autosize :autosize="{ minRows: 2, maxRows: 10}"
+                          v-model="addNewNoteForm.content" autocomplete="off" placeholder="content"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="addNewNoteVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submmitAddNewNote">确 定</el-button>
+        </div>
+    </el-dialog>
+
+
+    <el-dialog title="修改主笔记" :visible.sync="dialogFormVisible">
+        <el-form :model="noteForm">
+            <el-form-item label="标题" :label-width="formLabelWidth">
+                <el-input v-model="noteForm.title" autocomplete="off" placeholder="请输入标题"></el-input>
+            </el-form-item>
+            <el-form-item label="内容" :label-width="formLabelWidth">
+                <el-input type="textarea" autosize :autosize="{ minRows: 2, maxRows: 10}" v-model="noteForm.content"
+                          autocomplete="off" placeholder="请输入内容, markdown 格式"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submmitUpdateNote">确 定</el-button>
+        </div>
+    </el-dialog>
+
+
+    <el-dialog title="写评论" :visible.sync="commentFormVisible">
+        <el-form :model="commentForm">
+            <el-form-item label="评论" :label-width="formLabelWidth">
+                <el-input type="textarea" autosize :autosize="{ minRows: 4, maxRows: 10}" v-model="commentForm.content"
+                          autocomplete="off"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="commentForm.content= '' ;commentFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submmitNewComment">确 定</el-button>
+        </div>
+    </el-dialog>
+
+    <el-dialog title="修改评论" :visible.sync="updateCommentFormVisible">
+        <el-form :model="updateCommentForm">
+            <el-form-item label="评论" :label-width="formLabelWidth">
+                <el-input type="textarea" autosize :autosize="{ minRows: 4, maxRows: 10}"
+                          v-model="updateCommentForm.content"
+                          autocomplete="off"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="updateCommentForm.content= '' ;updateCommentFormVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submmitUpdateComment">确 定</el-button>
+        </div>
+    </el-dialog>
+</div>
+</body>
+<script src="../tool-box/external/element-ui/js/vue.js"></script>
+<script src="../tool-box/external/axios/axios.min.js"></script>
+<script src="../tool-box/external/element-ui/js/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>
+<script src="../tool-box/js/cobweb_note.js"></script>
+</html>

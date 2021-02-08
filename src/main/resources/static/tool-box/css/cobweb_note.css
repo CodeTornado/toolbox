@@ -1,0 +1,51 @@
+[v-cloak] {
+	display: none;
+}
+
+body {
+}
+
+#app {
+	
+}
+
+.el-select .el-input {
+	width: 130px;
+}
+.input-with-select .el-input-group__prepend {
+	background-color: #fff;
+}
+
+.el-row {
+	margin-bottom: 20px;
+}
+.el-col {
+	border-radius: 4px;
+}
+
+.grid-content {
+	border-radius: 4px;
+	min-height: 36px;
+}
+.row-bg {
+	padding: 10px 0;
+	background-color: #f9fafc;
+}
+.el-tag + .el-tag {
+	margin-left: 10px;
+}
+.button-new-tag {
+	margin-left: 10px;
+	height: 32px;
+	line-height: 30px;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+.input-new-tag {
+	width: 90px;
+	margin-left: 10px;
+	vertical-align: bottom;
+}
+
+
+

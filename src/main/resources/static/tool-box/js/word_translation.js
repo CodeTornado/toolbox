@@ -23,7 +23,7 @@ var Main = {data() {
                     };
 
 
-                    axios.get('/wordTranslationData', {
+                    axios.get('/toolbox/wordTranslationData', {
                         headers: {},
                         params: paramObj
                     })
