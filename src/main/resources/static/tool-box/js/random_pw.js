@@ -67,7 +67,7 @@ var Main = {
 				// 开始生成密码
 				//for 生成多个随机密码
 				// {生成一个随机密码 并写到追加到密码框 添加换行符号
-				for (var pwindex = 0; pwindex < user_form_data.count_num; pwindex++)
+				for (var pwwindex = 0; pwindex < user_form_data.count_num; pwindex++)
 					pass_result += (pass_result ? "\n" : "") + this.generate_one_pw();
 
 				//随机密码生成结束

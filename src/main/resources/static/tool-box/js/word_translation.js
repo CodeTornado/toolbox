@@ -18,15 +18,10 @@ var Main = {data() {
                 if(valid) {
                     var _this = this;
                     var word = _this.submitData.word;
-                    var paramObj = {
-                        'word': word,
-                    };
 
-
-                    axios.get('/toolbox/wordTranslationData', {
-                        headers: {},
-                        params: paramObj
-                    })
+                    axios.post('/toolbox/wordTranslationData', require('qs').stringify({
+                        'word': word
+                    }))
                         .then(function (response) {
                             if (response && response.data && response.data != "{}") {
                                 _this.tableData = response.data;

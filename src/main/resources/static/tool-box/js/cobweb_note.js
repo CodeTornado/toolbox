@@ -50,12 +50,11 @@ var Main = {
     beforeCreate() {
         var _this = this;
         //main_id将相关信息全部查出
-        var converter = new showdown.Converter();
+        var converter = new showdown.Converter({extensions: ['table']});
 
-        axios.get('/cobweb/selectTextById', {
-            headers: {},
-            params: {"id": main_id}
-        })
+        var params = new URLSearchParams();
+        params.append('id', main_id);
+        axios.post('/cobweb/selectTextById', params)
             .then(function (response) {
                 if (response && response.data) {
 
@@ -82,13 +81,10 @@ var Main = {
     methods: {
         submmitNewComment() {
             var _this = this;
-            axios.get('/cobweb/addNewComment', {
-                headers: {},
-                params: {
-                    "main_text_id": main_id,
-                    "content": this.commentForm.content.trim()
-                }
-            })
+            var params = new URLSearchParams();
+            params.append('main_text_id', main_id);
+            params.append('content', this.commentForm.content.trim());
+            axios.post('/cobweb/addNewComment', params)
                 .then(function (response) {
                     if (response && response.data > 0) {
 
@@ -121,12 +117,9 @@ var Main = {
         },
         submmitComment(commentId) {
             var _this = this;
-            axios.get('/cobweb/delComment', {
-                headers: {},
-                params: {
-                    "commentId": commentId
-                }
-            })
+            var params = new URLSearchParams();
+            params.append('commentId', commentId);
+            axios.post('/cobweb/delComment', params)
                 .then(function (response) {
                     if (response && response.data > 0) {
                         // _this.main_data.commentDatas.push(commentObj);
@@ -159,13 +152,10 @@ var Main = {
         disengage(relatedTextId) {
             var _this = this;
 
-            axios.get('/cobweb/disengage', {
-                headers: {},
-                params: {
-                    "main_text_id": main_id,
-                    "relatedTextId": relatedTextId
-                }
-            })
+            var params = new URLSearchParams();
+            params.append('main_text_id', main_id);
+            params.append('relatedTextId', relatedTextId);
+            axios.post('/cobweb/disengage', params)
                 .then(function (response) {
                     if (response && response.data > 0) {
                         // _this.main_data.relationNoteDatas.reomve(_this.addNewNoteForm);
@@ -188,19 +178,16 @@ var Main = {
         },
         submmitAddNewNote() {
             var _this = this;
-            axios.get('/cobweb/addNewNoteAndRelevance', {
-                headers: {},
-                params: {
-                    "main_text_id": main_id,
-                    "title": this.addNewNoteForm.title,
-                    "content": this.addNewNoteForm.content.trim()
-                }
-            })
+            var params = new URLSearchParams();
+            params.append('main_text_id', main_id);
+            params.append('title', this.addNewNoteForm.title);
+            params.append('content', this.addNewNoteForm.content.trim());
+            axios.post('/cobweb/addNewNoteAndRelevance', params)
                 .then(function (response) {
                     if (response && response.data > 0) {
                         _this.addNewNoteVisible = false;
                         //绑定到页面里
-                        var converter = new showdown.Converter();
+                        var converter = new showdown.Converter({extensions: ['table']});
                         var content_html = converter.makeHtml(_this.addNewNoteForm.content);
                         var id = response.data;
                         if (!_this.main_data.relationNoteDatas) {
@@ -230,14 +217,11 @@ var Main = {
                 return;
             }
 
-            axios.get('/cobweb/selectByLikeContent', {
-                headers: {},
-                params: {
-                    "id": main_id,
-                    "type": this.select,
-                    "content": queryString.trim()
-                }
-            })
+            var params = new URLSearchParams();
+            params.append('id', main_id);
+            params.append('type', this.select);
+            params.append('content', queryString.trim());
+            axios.post('/cobweb/selectByLikeContent', params)
                 .then(function (response) {
                     if (response && response.data) {
                         for (var i = 0; i < response.data.length; i++) {
@@ -269,13 +253,10 @@ var Main = {
                 return;
             }
             var _this = this;
-            axios.get('/cobweb/updateComment', {
-                headers: {},
-                params: {
-                    "commentId": this.updateCommentForm.id,
-                    "content": this.updateCommentForm.content
-                }
-            })
+            var params = new URLSearchParams();
+            params.append('commentId', this.updateCommentForm.id);
+            params.append('content', this.updateCommentForm.content);
+            axios.post('/cobweb/updateComment', params)
                 .then(function (response) {
                     if (response && response.data > 0) {
 
@@ -305,12 +286,9 @@ var Main = {
         },
         deleteMainNote() {
             var _this = this;
-            axios.get('/cobweb/deleteNoteById', {
-                headers: {},
-                params: {
-                    "id": main_id
-                }
-            })
+            var params = new URLSearchParams();
+            params.append('id', main_id);
+            axios.post('/cobweb/deleteNoteById', params)
                 .then(function (response) {
                     if (response && response.data > 0) {
                         _this.deleteNoteVisiblePrompt = false;
@@ -332,19 +310,17 @@ var Main = {
         },
         submmitUpdateNote() {
             var _this = this;
-            axios.get('/cobweb/updateNoteById', {
-                headers: {},
-                params: {
-                    "id": main_id,
-                    "title": this.noteForm.title.trim(),
-                    "content": this.noteForm.content.trim()
-                }
-            })
+
+            var params = new URLSearchParams();
+            params.append('id', main_id);
+            params.append('title', this.noteForm.title.trim());
+            params.append('content', this.noteForm.content.trim());
+            axios.post('/cobweb/updateNoteById', params)
                 .then(function (response) {
                     if (response && response.data && response.data > 0) {
                         _this.main_data.text.content = _this.noteForm.content.trim();
 
-                        var converter = new showdown.Converter();
+                        var converter = new showdown.Converter({extensions: ['table']});
                         _this.main_data.text.content_html = converter.makeHtml(_this.noteForm.content.trim());
                         _this.dialogFormVisible = false;
                         _this.$message.success("修改成功");
@@ -361,13 +337,11 @@ var Main = {
         deleteLabelAssociation(tag) {
 
             var _this = this;
-            axios.get('/cobweb/deleteLabelAssociation', {
-                headers: {},
-                params: {
-                    "textMainId": main_id,
-                    "labelName": tag
-                }
-            })
+
+            var params = new URLSearchParams();
+            params.append('textMainId', main_id);
+            params.append('labelName', tag);
+            axios.post('/cobweb/deleteLabelAssociation', params)
                 .then(function (response) {
                     if (response && response.data > 0) {
                         _this.$message.success("删除标签成功");
@@ -405,16 +379,14 @@ var Main = {
                     return;
                 }
                 var _this = this;
-                axios.get('/cobweb/associatedNote', {
-                    headers: {},
-                    params: {
-                        "main_id": main_id,
-                        "addTextId": addTextId
-                    }
-                })
+
+                var params = new URLSearchParams();
+                params.append('main_id', main_id);
+                params.append('addTextId', addTextId);
+                axios.post('/cobweb/associatedNote', params)
                     .then(function (response) {
                         if (response && response.data && response.data == 2) {
-                            var converter = new showdown.Converter();
+                            var converter = new showdown.Converter({extensions: ['table']});
                             _this.selectNoteItem.content_html = converter.makeHtml(_this.selectNoteItem.content);
                             if (!_this.main_data.relationNoteDatas) {
                                 _this.main_data.relationNoteDatas = [];
@@ -459,13 +431,11 @@ var Main = {
                 }
             }
             var _this = this;
-            axios.get('/cobweb/addNewTagAndRelevance', {
-                headers: {},
-                params: {
-                    "textMainId": main_id,
-                    "tagName": inputNewTag
-                }
-            })
+
+            var params = new URLSearchParams();
+            params.append('textMainId', main_id);
+            params.append('tagName', inputNewTag);
+            axios.post('/cobweb/addNewTagAndRelevance', params)
                 .then(function (response) {
                     if (response && response.data > 0) {
                         _this.$message.success("添加标签成功");
