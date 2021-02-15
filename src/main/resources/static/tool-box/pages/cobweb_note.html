@@ -15,7 +15,7 @@
                 </el-page-header>
             </div>
         </el-col>
-        <el-col :span="13">
+        <el-col :span="14">
             <div class="grid-content bg-purple">
                 <el-autocomplete style="width: 100%;" :fetch-suggestions="querySearchAsync" placeholder="请输入搜索内容"
                                  v-model="inputText"
@@ -28,9 +28,11 @@
                 </el-autocomplete>
             </div>
         </el-col>
-        <el-col :span="2">
+        <el-col :span="3">
             <el-row>
                 <el-button type="warning" icon="el-icon-link" @click="addNewLink" circle></el-button>
+                <el-button type="info" icon="el-icon-view" @click="openSelectNote" circle></el-button>
+                <el-button type="success" icon="el-icon-edit" @click="createNewNote" circle></el-button>
             </el-row>
         </el-col>
     </el-row>
@@ -154,20 +156,19 @@
 
 
     <!--隐藏弹出框-->
-
-    <el-dialog title="新增笔记并关联" :visible.sync="addNewNoteVisible">
-        <el-form :model="addNewNoteForm">
+    <el-dialog title="新增独立笔记" :visible.sync="createNewNoteVisible">
+        <el-form :model="createNewNoteForm">
             <el-form-item label="标题" :label-width="formLabelWidth">
-                <el-input v-model="addNewNoteForm.title" autocomplete="off" placeholder="请输入标题"></el-input>
+                <el-input v-model="createNewNoteForm.title" autocomplete="off" placeholder="请输入标题"></el-input>
             </el-form-item>
             <el-form-item label="内容" :label-width="formLabelWidth">
                 <el-input type="textarea" autosize :autosize="{ minRows: 2, maxRows: 10}"
-                          v-model="addNewNoteForm.content" autocomplete="off" placeholder="content"></el-input>
+                          v-model="createNewNoteForm.content" autocomplete="off" placeholder="输入内容"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="addNewNoteVisible = false">取 消</el-button>
-            <el-button type="primary" @click="submmitAddNewNote">确 定</el-button>
+            <el-button @click="createNewNoteVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submmitCreateNewNote">确 定</el-button>
         </div>
     </el-dialog>
 
@@ -185,6 +186,23 @@
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
             <el-button type="primary" @click="submmitUpdateNote">确 定</el-button>
+        </div>
+    </el-dialog>
+
+
+    <el-dialog title="新增笔记并关联" :visible.sync="addNewNoteVisible">
+        <el-form :model="addNewNoteForm">
+            <el-form-item label="标题" :label-width="formLabelWidth">
+                <el-input v-model="addNewNoteForm.title" autocomplete="off" placeholder="请输入标题"></el-input>
+            </el-form-item>
+            <el-form-item label="内容" :label-width="formLabelWidth">
+                <el-input type="textarea" autosize :autosize="{ minRows: 2, maxRows: 10}"
+                          v-model="addNewNoteForm.content" autocomplete="off" placeholder="输入内容"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="addNewNoteVisible = false">取 消</el-button>
+            <el-button type="primary" @click="submmitAddNewNote">确 定</el-button>
         </div>
     </el-dialog>
 

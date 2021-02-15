@@ -164,6 +164,16 @@ public class WebNoteApplication {
         return newtTextId;
     }
 
+
+    @RequestMapping("addNewNote")
+    @ResponseBody
+    public int addNewNote(@RequestParam("title") String title, @RequestParam("content") String content) {
+        Text text = new Text();
+        text.setTitle(title);
+        text.setContent(content);
+        return textDto.addText(text);
+    }
+
     @RequestMapping("disengage")
     @ResponseBody
     public int disengage(@RequestParam("main_text_id") Integer main_text_id, @RequestParam("relatedTextId") Integer relatedTextId) {

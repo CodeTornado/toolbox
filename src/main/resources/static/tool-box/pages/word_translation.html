@@ -27,10 +27,6 @@
 						<template slot-scope="scope">
 						{{scope.row.example_sentence}}
 							<span v-if="scope.row.translate" :title="scope.row.translate" style="color: #0000FF;"><b>[translate]</b></span>
-						</template>
-					</el-table-column>
-					<el-table-column label="voice">
-						<template slot-scope="scope">
 							<audio v-if="scope.row.voice" :src="scope.row.voice" controls="controls"></audio>
 						</template>
 					</el-table-column>

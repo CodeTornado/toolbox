@@ -25,6 +25,11 @@ var dataObj = {
         title: '',
         content: ''
     },
+    createNewNoteVisible: false,
+    createNewNoteForm: {
+        title: '',
+        content: ''
+    },
     addNewNoteVisible: false,
     addNewNoteForm: {
         title: '',
@@ -43,6 +48,10 @@ var dataObj = {
     deleteNoteVisiblePrompt: false
 };
 
+let converter = new showdown.Converter({
+    extensions: ['table']
+});
+
 var Main = {
     data() {
         return dataObj;
@@ -50,7 +59,6 @@ var Main = {
     beforeCreate() {
         var _this = this;
         //main_id将相关信息全部查出
-        var converter = new showdown.Converter({extensions: ['table']});
 
         var params = new URLSearchParams();
         params.append('id', main_id);
@@ -79,6 +87,43 @@ var Main = {
             });
     },
     methods: {
+        createNewNote() {
+            this.createNewNoteForm = {
+                title: '',
+                content: ''
+            };
+            this.createNewNoteVisible = true;
+
+        },
+        submmitCreateNewNote() {
+            var _this = this;
+            var params = new URLSearchParams();
+            params.append('title', this.createNewNoteForm.title);
+            params.append('content', this.createNewNoteForm.content.trim());
+            axios.post('/cobweb/addNewNote', params)
+                .then(function (response) {
+                    if (response && response.data > 0) {
+                        _this.createNewNoteVisible = false;
+
+                        _this.$message.success('新增成功');
+                        window.location.href = "/cobweb/cobweb_note?id=" + response.data;
+                    } else {
+                        _this.$message.error('新增失败!!');
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                })
+                .then(function () {
+                });
+        },
+        openSelectNote() {
+            if (this.selectNoteItem == null || !this.selectNoteItem.id) {
+                this.$message.error('选择笔记后跳转!!');
+                return;
+            }
+            window.location.href = "/cobweb/cobweb_note?id=" + this.selectNoteItem.id;
+        },
         submmitNewComment() {
             var _this = this;
             var params = new URLSearchParams();
@@ -187,7 +232,6 @@ var Main = {
                     if (response && response.data > 0) {
                         _this.addNewNoteVisible = false;
                         //绑定到页面里
-                        var converter = new showdown.Converter({extensions: ['table']});
                         var content_html = converter.makeHtml(_this.addNewNoteForm.content);
                         var id = response.data;
                         if (!_this.main_data.relationNoteDatas) {
@@ -320,7 +364,6 @@ var Main = {
                     if (response && response.data && response.data > 0) {
                         _this.main_data.text.content = _this.noteForm.content.trim();
 
-                        var converter = new showdown.Converter({extensions: ['table']});
                         _this.main_data.text.content_html = converter.makeHtml(_this.noteForm.content.trim());
                         _this.dialogFormVisible = false;
                         _this.$message.success("修改成功");
@@ -386,7 +429,6 @@ var Main = {
                 axios.post('/cobweb/associatedNote', params)
                     .then(function (response) {
                         if (response && response.data && response.data == 2) {
-                            var converter = new showdown.Converter({extensions: ['table']});
                             _this.selectNoteItem.content_html = converter.makeHtml(_this.selectNoteItem.content);
                             if (!_this.main_data.relationNoteDatas) {
                                 _this.main_data.relationNoteDatas = [];
@@ -462,3 +504,10 @@ var Main = {
 }
 var Ctor = Vue.extend(Main);
 new Ctor().$mount('#app');
+
+Vue.directive('highlight', function (el) {
+    let blocks = el.querySelectorAll('pre code');
+    blocks.forEach((block) => {
+        hljs.highlightBlock(block)
+    })
+});
